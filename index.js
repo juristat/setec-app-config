@@ -24,23 +24,30 @@ class SetecAppConfig {
   constructor(opts = {}) {
     this.opts = Object.assign({}, {
       configFile: null,
+      config: null,
       s3Bucket: null,
       s3Prefix: 'setec',
     }, opts);
 
-    const ext = this.opts.configFile.split('.').pop();
-    const hasExt = /\/[^/]+\.[^.]+$/.test(this.opts.configFile);
+    if (this.opts.configFile) {
+      const ext = this.opts.configFile.split('.').pop();
+      const hasExt = /\/[^/]+\.[^.]+$/.test(this.opts.configFile);
 
-    if (!hasExt) {
-      throw new Error("Don't know what to do with a configFile with no extension");
-    } else if (ext === 'json') {
-      this.config = JSON.parse(fs.readFileSync(this.opts.configFile));
-    } else if (ext === 'js') {
-      /* eslint-disable global-require, import/no-dynamic-require */
-      this.config = require(this.opts.configFile);
-      /* eslint-enable global-require, import/no-dynamic-require */
+      if (!hasExt) {
+        throw new Error("Don't know what to do with a configFile with no extension");
+      } else if (ext === 'json') {
+        this.config = JSON.parse(fs.readFileSync(this.opts.configFile));
+      } else if (ext === 'js') {
+        /* eslint-disable global-require, import/no-dynamic-require */
+        this.config = require(this.opts.configFile);
+        /* eslint-enable global-require, import/no-dynamic-require */
+      } else {
+        throw new Error(`Don't know what to do with a configFile ending in .${ext}`);
+      }
+    } else if (this.opts.config) {
+      this.config = this.opts.config;
     } else {
-      throw new Error(`Don't know what to do with a configFile ending in .${ext}`);
+      throw new Error('must specify config or configFile');
     }
 
     if (this.config.aws) {
@@ -63,6 +70,12 @@ class SetecAppConfig {
       this.loaded = true;
       return config;
     });
+  }
+
+  exportable() {
+    const out = this.config;
+    out.load = this.load.bind(this);
+    return out;
   }
 }
 
