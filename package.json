@@ -1,0 +1,27 @@
+{
+  "name": "setec-app-config",
+  "version": "1.0.0",
+  "engines": {
+    "node": "^6"
+  },
+  "main": "index.js",
+  "author": "Robert Ward <robert@rtward.com>",
+  "contributors": [
+    "Ben Chociej <ben.chociej@juristat.com>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.7.13",
+    "bluebird": "^3.4.6",
+    "lodash": "^4.17.2",
+    "setec": "^1.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.1",
+    "eslint-config-airbnb-base": "^11.0.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "scripts": {
+    "test": "eslint ."
+  }
+}
