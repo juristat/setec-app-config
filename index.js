@@ -66,16 +66,15 @@ class SetecAppConfig {
     }
 
     return loadSecrets(this.setec, this.config).then((config) => {
-      this.config = config;
+      Object.assign(this.config, config);
       this.loaded = true;
       return config;
     });
   }
 
   exportable() {
-    const out = this.config;
-    out.load = this.load.bind(this);
-    return out;
+    this.config.load = this.load.bind(this);
+    return this.config;
   }
 }
 
