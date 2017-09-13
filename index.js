@@ -8,7 +8,7 @@ function loadSecrets(setec, config) {
   function scopedLoad(obj) {
     if (Array.isArray(obj)) {
       return Promise.map(obj, scopedLoad);
-    } else if (obj instanceof Object) {
+    } else if (_.isPlainObject(obj)) {
       if (Object.keys(obj).length === 1 && {}.hasOwnProperty.call(obj, 'secret')) {
         return setec.get(obj.secret);
       }
