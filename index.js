@@ -5,14 +5,20 @@ const Promise = require('bluebird');
 const Setec = require('setec');
 
 function loadSecrets(setec, config) {
-  function scopedLoad(obj) {
+  function scopedLoad(obj, path = []) {
     if (Array.isArray(obj)) {
-      return Promise.map(obj, scopedLoad);
+      return Promise.map(obj, (item, idx) => scopedLoad(item, path.concat(idx)));
     } else if (_.isPlainObject(obj)) {
       if (Object.keys(obj).length === 1 && {}.hasOwnProperty.call(obj, 'secret')) {
-        return setec.get(obj.secret);
+        return Promise.resolve()
+          .then(() => setec.get(obj.secret))
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error(`Unable to load secret at ${path.join('.')}: ${err.message}`);
+            throw new Error(`Unable to load secret at ${path.join('.')}: ${err.message}`);
+          });
       }
-      return Promise.props(_.mapValues(obj, scopedLoad));
+      return Promise.props(_.mapValues(obj, (item, key) => scopedLoad(item, path.concat(key))));
     }
     return Promise.resolve(obj);
   }
